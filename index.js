@@ -4,69 +4,60 @@ let myLeads = []
 const inputEl = document.getElementById("input-el")
 const inputBtn = document.getElementById("input-btn")
 const ulEl = document.getElementById("ul-El")
+const deleteBtn = document.getElementById("delete-btn")
+const tabBtn = document.getElementById("tab-btn")
+const leadsFromLocalStorage = JSON.parse(localStorage.getItem("myLeads")) //using const, so as to not be reassigned
 
-// myLeads = JSON.parse(myLeads)
-// myLeads.push("www.ayobamiji1234.com")
-// myLeads= JSON.stringify(myLeads)
-// console.log(typeof myLeads)
+if (leadsFromLocalStorage){
+    myLeads = leadsFromLocalStorage
+    render(myLeads)
+}
 
 
-// myLeads = JSON.stringify(myLeads)
 
-// console.log(typeof myLeads)
+tabBtn.addEventListener("click", function (){
+    chrome.tabs.query({active:true , currentWindow:true}, function(tabs){
+        myLeads.push(tabs[0].url)
+        localStorage.setItem("myLeads", JSON.stringify(myLeads))
+        render(myLeads)
+    })
+    
 
-// myLeads = JSON.parse(myLeads)
+} )
 
-// myLeads.push("www.epicleads.com")
-// console.log(myLeads)
-// myLeads = JSON.parse(myLeads)
+function render(leads){
+    let listItems = ""
+    for (let i = 0; i < leads.length; i++){
+        // listItems += "<li> <a  target='_blank' href='" + myLeads[i] +"'>" + myLeads[i] + "</a> </li>"
+        listItems += `
+            <li> 
+                <a  target='_blank' href='${leads[i]}'>
+                    ${leads[i]} 
+                </a> 
+            </li>
+        `
+       
+    }
 
-// myLeads.push("www.epiclead.com")
+    ulEl.innerHTML= listItems
+}
 
-// console.log(myLeads)
 
-localStorage.clear()
-let leadsFromLocalStorage = JSON.parse(localStorage.getItem("myLeads"))
-console.log(leadsFromLocalStorage)
+deleteBtn.addEventListener("dblclick", function() {
+    localStorage.clear()
+    myLeads = []
+    render(myLeads)
+})
 
 inputBtn.addEventListener("click", function(){
     myLeads.push(inputEl.value)
     inputEl.value = ""
     
     localStorage.setItem("myLeads", JSON.stringify(myLeads))
-    renderLeads()
-    // inputEl.value = ""
-
-    console.log(localStorage.getItem("myLeads"))
+    render(myLeads) 
     
 })
 
 
-// localStorage.setItem("myName", "oluwanisola")
-// localStorage.getItem("myLeads")
 
-// localStorage.clear
 
-// function renderLead(){
-//     let listItem = "<li>" + inputEl.value + "</li>"
-//     ulEl.innerHTML= listItem
-// }
-
-function renderLeads(){
-    let listItems = ""
-    for (let i = 0; i < myLeads.length; i++){
-        // listItems += "<li> <a  target='_blank' href='" + myLeads[i] +"'>" + myLeads[i] + "</a> </li>"
-        listItems += `
-            <li> 
-                <a  target='_blank' href='${myLeads[i]}'>
-                    ${myLeads[i]} 
-                </a> 
-            </li>
-        `
-        //   const li = document.createElement("li")
-        //   li.textContent = myLeads[i]
-        //   ulEl.append(li)
-    }
-
-    ulEl.innerHTML= listItems
-}
